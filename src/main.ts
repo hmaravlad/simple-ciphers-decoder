@@ -1,7 +1,8 @@
 import { parse } from 'ts-command-line-args';
 import { ReaderFactory } from './readers/reader-factory';
 import { IArgs, argsConfig } from './types/command-line-args';
-import { readFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
+import { DecoderFactory } from './decoders/decoder-factory';
 
 
 (async () => {
@@ -9,6 +10,9 @@ import { readFile } from 'fs/promises';
   const ciphertext = (await readFile(args.source)).toString();
   const readerFactory = new ReaderFactory();
   const reader = readerFactory.getReader(args.sourceFormat);
-  const ciphertextBinary = reader.read(ciphertext);
-  console.dir({ ciphertextBinary });
+  const ciphertextBytes = reader.read(ciphertext);
+  const decoderFactory = new DecoderFactory();
+  const decoder = decoderFactory.getDecoder(args.cipher);
+  const decoded = decoder.decrypt(ciphertextBytes);
+  await writeFile(args.output, decoded);
 })();
