@@ -1,3 +1,3 @@
 export interface IReader {
-  read: (text: string) => Uint8Array
+  read: (text: string) => number[]
 }
