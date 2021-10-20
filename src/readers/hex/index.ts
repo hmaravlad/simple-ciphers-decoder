@@ -1,8 +1,15 @@
 import { IReader } from 'src/types/reader';
 
 export class HexReader implements IReader {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   read(text: string): number[] {
-    throw new Error('NOT IMPLEMENTED');
+    if (text.length < 2 || text.length % 2 !== 0) {
+      throw new Error('invalid hex text');
+    }
+    const bytes: number[] = [];
+    for (let i = 0; i < text.length; i += 2) {
+      const byte = parseInt(text.slice(i, i + 2), 16);
+      bytes.push(byte);
+    }
+    return bytes;
   }
 }
