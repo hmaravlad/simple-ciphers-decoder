@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/main.js",
     "serve": "tsnd --respawn --no-notify --transpile-only src/main.ts",
+    "task1": "tsc; node dist/main.js --source='data/encrypted1' --output='data/result1.md' --cipher='single-byte-xor' --sourceFormat='hex'",
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --fix",
     "build": "tsc"
