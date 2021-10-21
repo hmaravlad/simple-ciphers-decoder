@@ -1,1 +1,1 @@
-# simple-ciphers-decryptor
+# simple-ciphers-decoder
