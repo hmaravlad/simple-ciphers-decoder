@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static GeneticAlgoDecipher.FrequencyAnalysis;
 
 namespace GeneticAlgoDecipher
 {
 	class Substitution
 	{
 		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		string LetterSequence { get; set; }
+		public string LetterSequence { get; set; }
+
+		public AnalysisResult AnalysisResult { get; set; }
 
 		public Substitution()
 		{
 			LetterSequence = String.Concat(Alphabet.OrderBy(x => Guid.NewGuid()));
+		}
+
+		public Substitution(string letterSequence)
+		{
+			LetterSequence = letterSequence;
 		}
 
 		public Dictionary<char, char> ToDictionary()
@@ -26,6 +35,19 @@ namespace GeneticAlgoDecipher
 			}
 
 			return dictionary;
+		}
+	}
+
+	class SubstitutionComparer : IEqualityComparer<Substitution>
+	{
+		public bool Equals(Substitution x, Substitution y)
+		{
+			return x.LetterSequence == y.LetterSequence;
+		}
+
+		public int GetHashCode([DisallowNull] Substitution obj)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
