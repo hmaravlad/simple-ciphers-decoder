@@ -2,6 +2,12 @@ import { IDecoder } from 'src/types/decoder';
 
 const SHARPNESS_CRITERION = 0.3;
 
+type Str = number[];
+
+function keyShuffle(texts: Str[][]) {
+
+}
+
 export class RepeatingKeyXorDecoder implements IDecoder {
   decrypt(ciphertext: number[]): string {
     return this.getKeyLength(ciphertext).toString();
