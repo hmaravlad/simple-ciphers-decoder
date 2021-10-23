@@ -47,7 +47,7 @@ namespace GeneticAlgoDecipher
 
 		public int GetHashCode([DisallowNull] Substitution obj)
 		{
-			throw new NotImplementedException();
+			return obj.LetterSequence.GetHashCode();
 		}
 	}
 }

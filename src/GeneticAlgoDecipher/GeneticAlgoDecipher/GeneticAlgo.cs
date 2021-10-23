@@ -28,7 +28,8 @@ namespace GeneticAlgoDecipher
 				CalculateFit();
 				Selection();
 				i++;
-				Console.WriteLine(i);
+				if (i % 100 == 0)
+					Console.WriteLine(i);
 			} while (i < NumberOfIterations);
 			
 
@@ -42,17 +43,17 @@ namespace GeneticAlgoDecipher
 				Substitutions.Add(newSubstitution);
 			}
 			CalculateFit();
-			Substitutions = Substitutions.OrderByDescending(x => x.AnalysisResult.Change).ToList();
+			Substitutions = Substitutions.OrderBy(x => x.AnalysisResult.Change).ToList();
 
 			foreach(var item in Substitutions)
 			{
-				Console.WriteLine(item.LetterSequence);
+				//Console.WriteLine(item.LetterSequence);
 			}
 		}
 
 		void Breeding()
 		{
-			for(int i = 0; i < Substitutions.Count; i+=2)
+			for(int i = 0; i < PopulationSize; i+=2)
 			{
 				Crossover(Substitutions[i], Substitutions[i + 1]);
 			}
@@ -89,29 +90,55 @@ namespace GeneticAlgoDecipher
 
 				for (int i = 0; i < crossStart; i++)
 				{
-					while (swapsFirst.ContainsKey(changedSecuence1[i]))
+					while (swapsSecond.ContainsKey(changedSecuence1[i]))
 					{
-						changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
-						Console.WriteLine("here");
+						var lettersWithDuplicates = changedSecuence1.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+
+						changedSecuence1[i] = swapsSecond[changedSecuence1[i]];
+						/*if(swapsFirst.ContainsKey(changedSecuence1[i]))
+						{
+							changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
+						}*/
+						//Console.WriteLine("Here " + i);
 					}
 
-					while (swapsSecond.ContainsKey(changedSecuence2[i]))
+					while (swapsFirst.ContainsKey(changedSecuence2[i]))
 					{
-						changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
-						Console.WriteLine("here");
+						var lettersWithDuplicates = changedSecuence2.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+						changedSecuence2[i] = swapsFirst[changedSecuence2[i]];
+
+						/*if (swapsSecond.ContainsKey(changedSecuence2[i]))
+						{
+							changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
+						}*/
+						//Console.WriteLine("Here " + i);
 					}
 				}
 
 				for (int i = crossEnd+1; i < Alphabet.Length; i++)
 				{
-					while (swapsFirst.ContainsKey(changedSecuence1[i]))
+					while (swapsSecond.ContainsKey(changedSecuence1[i]))
 					{
-						changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
+						var lettersWithDuplicates = changedSecuence1.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+
+						changedSecuence1[i] = swapsSecond[changedSecuence1[i]];
+						/*if (swapsFirst.ContainsKey(changedSecuence1[i]))
+						{
+							changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
+						}*/
+						//Console.WriteLine("Here " + i);
 					}
 
-					while (swapsSecond.ContainsKey(changedSecuence2[i]))
+					while (swapsFirst.ContainsKey(changedSecuence2[i]))
 					{
-						changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
+						var lettersWithDuplicates = changedSecuence2.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
+
+						changedSecuence2[i] = swapsFirst[changedSecuence2[i]];
+						/*if (swapsSecond.ContainsKey(changedSecuence2[i]))
+						{
+							changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
+						}*/
+						//Console.WriteLine("Here " + i);
 					}
 				}
 
@@ -126,7 +153,7 @@ namespace GeneticAlgoDecipher
 
 			foreach (var item in Substitutions)
 			{
-				if(random.Next(100) <= 1)
+				if(random.Next(100) <= 3)
 				{
 					Mutate(item);
 				}
@@ -147,9 +174,11 @@ namespace GeneticAlgoDecipher
 
 		void Selection()
 		{
+			var x = Substitutions
+				.Distinct(new SubstitutionComparer()).ToList();
 			Substitutions = Substitutions
 				.Distinct(new SubstitutionComparer())
-				.OrderByDescending(x => x.AnalysisResult.Change)
+				.OrderBy(x => x.AnalysisResult.Change)
 				.Take(PopulationSize).ToList();
 		}
 

@@ -65,7 +65,7 @@ namespace GeneticAlgoDecipher
 			var result = new AnalysisResult();
 			foreach (char letter in _alphabet)
 			{
-				int frequency = text.Where(x => x == letter).Count() / textLength;
+				double frequency = text.Where(x => x == letter).Count() / (double)textLength;
 				result.LetterFrequencies.Add(letter, frequency);
 
 				double change = Math.Abs(EnglishFrequencies[letter] - frequency);
