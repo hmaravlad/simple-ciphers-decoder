@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GeneticAlgoDecipher
@@ -18,9 +20,12 @@ namespace GeneticAlgoDecipher
 			{
 				Change = 0;
 				LetterFrequencies = new Dictionary<char, double>();
+
+				
 			}
 		}
 		public Dictionary<char, double> EnglishFrequencies { get; set; }
+		public Dictionary<string, double> PairFreqs = new Dictionary<string, double>();
 
 		private string _alphabet;
 
@@ -57,6 +62,15 @@ namespace GeneticAlgoDecipher
 			};
 
 			_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+			const string filename = "letterFrequency.json";
+			string file = File.ReadAllText(filename);
+			List<PairFrequency> freqs = JsonSerializer.Deserialize<List<PairFrequency>>(file);
+
+			foreach (var item in freqs)
+			{
+				PairFreqs.Add(item.Letter, item.Chance);
+			}
 		}
 
 		public AnalysisResult Analyze(string text)
@@ -72,6 +86,30 @@ namespace GeneticAlgoDecipher
 				result.Change += change;
 			}
 
+			return result;
+		}
+
+		public double AnalyzePairs(string text)
+		{
+			double result = 0;
+			//Dictionary<string, double> changes = new Dictionary<string, double>();
+			foreach (var key in PairFreqs.Keys)
+			{
+				int index = 0;
+				int quantity = 0;
+				while ((index = text.IndexOf(key, index)) != -1)
+				{
+					quantity++;
+					index++;
+				}
+				/*if(quantity == 0)
+				{
+					continue;
+				}*/
+				double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
+				result += change;
+				//changes.Add(key, change);
+			}
 			return result;
 		}
 	}

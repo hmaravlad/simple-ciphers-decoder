@@ -28,7 +28,7 @@ namespace GeneticAlgoDecipher
 				CalculateFit();
 				Selection();
 				i++;
-				if (i % 100 == 0)
+				if (i % 1 == 0)
 					Console.WriteLine(i);
 			} while (i < NumberOfIterations);
 			
@@ -43,7 +43,7 @@ namespace GeneticAlgoDecipher
 				Substitutions.Add(newSubstitution);
 			}
 			CalculateFit();
-			Substitutions = Substitutions.OrderBy(x => x.AnalysisResult.Change).ToList();
+			Substitutions = Substitutions.OrderBy(x => x.PairChangeResult).ToList();
 
 			foreach(var item in Substitutions)
 			{
@@ -178,18 +178,25 @@ namespace GeneticAlgoDecipher
 				.Distinct(new SubstitutionComparer()).ToList();
 			Substitutions = Substitutions
 				.Distinct(new SubstitutionComparer())
-				.OrderBy(x => x.AnalysisResult.Change)
+				.OrderBy(x => x.PairChangeResult)
 				.Take(PopulationSize).ToList();
 		}
 
 		void CalculateFit()
 		{
+			List<Task> tasks = new List<Task>();
+
 			foreach (var item in Substitutions)
 			{
-				string text = SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionary());
-				var result = FrequencyAnalysis.Analyze(text);
-				item.AnalysisResult = result;
+				var newTask = new Task(() => {
+					string text = SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionary());
+					var result = FrequencyAnalysis.AnalyzePairs(text);
+					item.PairChangeResult = result;
+				});
+				newTask.Start();
+				tasks.Add(newTask);				
 			}
+			Task.WaitAll(tasks.ToArray());
 		}
 	}
 }

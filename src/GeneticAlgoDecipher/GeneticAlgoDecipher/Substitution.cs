@@ -14,6 +14,7 @@ namespace GeneticAlgoDecipher
 		public string LetterSequence { get; set; }
 
 		public AnalysisResult AnalysisResult { get; set; }
+		public double PairChangeResult { get; set; }
 
 		public Substitution()
 		{
