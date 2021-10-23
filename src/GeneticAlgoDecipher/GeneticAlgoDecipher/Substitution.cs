@@ -16,6 +16,8 @@ namespace GeneticAlgoDecipher
 		public AnalysisResult AnalysisResult { get; set; }
 		public double PairChangeResult { get; set; }
 
+		public int Wrong { get; set; }
+
 		public Substitution()
 		{
 			LetterSequence = String.Concat(Alphabet.OrderBy(x => Guid.NewGuid()));
@@ -36,6 +38,16 @@ namespace GeneticAlgoDecipher
 			}
 
 			return dictionary;
+		}
+
+		public static Substitution FromDictionary(Dictionary<char,	char> cypher)
+		{
+			StringBuilder stringBuilder = new StringBuilder("");
+			for (int i = 0; i < Alphabet.Length; i++)
+			{
+				stringBuilder.Append(cypher[Alphabet[i]]);
+			}
+			return new Substitution(stringBuilder.ToString());
 		}
 	}
 

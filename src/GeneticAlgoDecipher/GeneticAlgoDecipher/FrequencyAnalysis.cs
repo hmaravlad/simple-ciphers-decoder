@@ -26,6 +26,7 @@ namespace GeneticAlgoDecipher
 		}
 		public Dictionary<char, double> EnglishFrequencies { get; set; }
 		public Dictionary<string, double> PairFreqs = new Dictionary<string, double>();
+		public Dictionary<string, double> TrippleFreqs = new Dictionary<string, double>();
 
 		private string _alphabet;
 
@@ -67,16 +68,27 @@ namespace GeneticAlgoDecipher
 			string file = File.ReadAllText(filename);
 			List<PairFrequency> freqs = JsonSerializer.Deserialize<List<PairFrequency>>(file);
 
-			foreach (var item in freqs)
+			foreach (var item in freqs.OrderByDescending(x => x.Chance).Take(200).ToList())
 			{
 				PairFreqs.Add(item.Letter, item.Chance);
 			}
+
+			const string threeFilename = "letterFrequencyThree.json";
+			file = File.ReadAllText(threeFilename);
+			List<PairFrequency> threeFreqs = JsonSerializer.Deserialize<List<PairFrequency>>(file);
+
+			foreach (var item in threeFreqs)
+			{
+				TrippleFreqs.Add(item.Letter, item.Chance);
+			}
+
 		}
 
 		public AnalysisResult Analyze(string text)
 		{
 			int textLength = text.Length;
 			var result = new AnalysisResult();
+
 			foreach (char letter in _alphabet)
 			{
 				double frequency = text.Where(x => x == letter).Count() / (double)textLength;
@@ -92,7 +104,15 @@ namespace GeneticAlgoDecipher
 		public double AnalyzePairs(string text)
 		{
 			double result = 0;
+			foreach (var letter in _alphabet)
+			{
+				double score = text.Where(x => x == letter).Count() * EnglishFrequencies[letter];
+				result += score;
+				//double change = Math.Abs((text.Where(x => x == letter).Count()/text.Length) - EnglishFrequencies[letter]);
+				//result += change;
+			}
 			//Dictionary<string, double> changes = new Dictionary<string, double>();
+			/*
 			foreach (var key in PairFreqs.Keys)
 			{
 				int index = 0;
@@ -102,15 +122,78 @@ namespace GeneticAlgoDecipher
 					quantity++;
 					index++;
 				}
-				/*if(quantity == 0)
-				{
-					continue;
-				}*/
-				double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
-				result += change;
+
+				result += PairFreqs[key] * quantity * 20;
+				//if(quantity == 0)
+				//{
+				//	continue;
+				//}
+				//double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
+				//result += change;
 				//changes.Add(key, change);
+
+
 			}
+
+			foreach (var key in TrippleFreqs.Keys)
+			{
+				int index = 0;
+				int quantity = 0;
+				while ((index = text.IndexOf(key, index)) != -1)
+				{
+					quantity++;
+					index++;
+				}
+
+				result += TrippleFreqs[key] * quantity * 50;
+				//if(quantity == 0)
+				//{
+				//	continue;
+				//}
+				//double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
+				//result += change;
+				//changes.Add(key, change);
+
+
+			}
+			*/
+			
+			Dictionary<string, int> appearancesPairs = new Dictionary<string, int>();
+			for(int i = 0; i < text.Length-1; i++)
+			{
+				string current = String.Concat(text[i],text[i + 1]);
+				if(!appearancesPairs.ContainsKey(current))
+				{
+					appearancesPairs.Add(current, 0);
+				}
+				appearancesPairs[current] += 1;
+			}
+
+			Dictionary<string, int> appearancesTrios = new Dictionary<string, int>();
+			for (int i = 0; i < text.Length - 2; i++)
+			{
+				string current = String.Concat(text[i], text[i + 1], text[i + 2]);
+				if (!appearancesTrios.ContainsKey(current))
+				{
+					appearancesTrios.Add(current, 0);
+				}
+				appearancesTrios[current] += 1;
+			}
+
+			foreach (var key in PairFreqs.Keys)
+			{
+				if(appearancesPairs.ContainsKey(key))
+					result += PairFreqs[key] * appearancesPairs[key] * 8; // 8-9
+			}
+
+			foreach (var key in TrippleFreqs.Keys)
+			{
+				if (appearancesTrios.ContainsKey(key))
+					result += TrippleFreqs[key] * appearancesTrios[key] * 30; // 30
+			}
+			
 			return result;
+
 		}
 	}
 }

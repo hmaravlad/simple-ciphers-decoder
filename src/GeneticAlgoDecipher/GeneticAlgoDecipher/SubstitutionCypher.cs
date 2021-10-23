@@ -10,7 +10,7 @@ namespace GeneticAlgoDecipher
 	{
 		public string Decypher(string text, Dictionary<char, char> key)
 		{
-			return String.Concat(text.Select(x => key[x]));
+			return String.Concat(text.Select(x => key.ContainsKey(x) ? key[x] : x));
 		}		
 	}
 }
