@@ -112,55 +112,7 @@ namespace GeneticAlgoDecipher
 			{
 				double score = text.Where(x => x == letter).Count() * EnglishFrequencies[letter];
 				result += score;
-				//double change = Math.Abs((text.Where(x => x == letter).Count()/text.Length) - EnglishFrequencies[letter]);
-				//result += change;
 			}
-			//Dictionary<string, double> changes = new Dictionary<string, double>();
-			/*
-			foreach (var key in PairFreqs.Keys)
-			{
-				int index = 0;
-				int quantity = 0;
-				while ((index = text.IndexOf(key, index)) != -1)
-				{
-					quantity++;
-					index++;
-				}
-
-				result += PairFreqs[key] * quantity * 20;
-				//if(quantity == 0)
-				//{
-				//	continue;
-				//}
-				//double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
-				//result += change;
-				//changes.Add(key, change);
-
-
-			}
-
-			foreach (var key in TrippleFreqs.Keys)
-			{
-				int index = 0;
-				int quantity = 0;
-				while ((index = text.IndexOf(key, index)) != -1)
-				{
-					quantity++;
-					index++;
-				}
-
-				result += TrippleFreqs[key] * quantity * 50;
-				//if(quantity == 0)
-				//{
-				//	continue;
-				//}
-				//double change = Math.Abs(((double)quantity / (text.Length - 1)) - PairFreqs[key]);
-				//result += change;
-				//changes.Add(key, change);
-
-
-			}
-			*/
 			
 			Dictionary<string, int> appearancesPairs = new Dictionary<string, int>();
 			for(int i = 0; i < text.Length-1; i++)
