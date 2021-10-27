@@ -210,6 +210,8 @@ namespace GeneticAlgoDecipher
 				char buff = stringBuilder[first];
 				stringBuilder[first] = stringBuilder[second];
 				stringBuilder[second] = buff;
+
+				substitution.LetterSequence = stringBuilder.ToString();
 			}
 		}
 
