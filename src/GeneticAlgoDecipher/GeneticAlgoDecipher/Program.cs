@@ -10,11 +10,22 @@ namespace GeneticAlgoDecipher
 	{
 		static void Main(string[] args)
 		{
-			GeneticAlgo algo = new GeneticAlgo();
-			SubstitutionCypher cypher = new SubstitutionCypher();
-			
+			//GeneticAlgo algo = new GeneticAlgo();
+			GeneticAlgoPolyalphabetic algo = new GeneticAlgoPolyalphabetic();
+			//SubstitutionCypher cypher = new SubstitutionCypher();
+			PolyalphabeticCypher cypher = new PolyalphabeticCypher();
 
 			algo.RunAlgorythm();
+
+			foreach (var item in algo.Substitutions.Take(20))
+			{
+				string result = cypher.Decypher(algo.TextToDecypher, item.ToDictionaries());
+				Console.WriteLine("===============");
+				Console.WriteLine("Change: " + item.PairChangeResult);
+				Console.WriteLine(result);
+				Console.WriteLine("\n\n================\n\n");
+			}
+			/*
 			const string correct = "EKMFLGDQVINTBWYHJUSPAXORCZ";
 			var first = algo.Substitutions.First();
 
@@ -49,6 +60,7 @@ namespace GeneticAlgoDecipher
 			var resOfCorrect = frequencyAnalysis.AnalyzePairs(decyphered);
 
 			Console.WriteLine("Correct Score: " + resOfCorrect);
+			*/
 		}
 	}
 }

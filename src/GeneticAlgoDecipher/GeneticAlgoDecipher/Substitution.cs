@@ -63,4 +63,96 @@ namespace GeneticAlgoDecipher
 			return obj.LetterSequence.GetHashCode();
 		}
 	}
+
+
+	class PolyalphabeticSubstitution
+	{
+		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		public string[] LetterSequences { get; set; }
+
+		public AnalysisResult AnalysisResult { get; set; }
+		public double PairChangeResult { get; set; }
+
+		public int Wrong { get; set; }
+		public int NumberOfAlphabets { get; set; }
+
+		public PolyalphabeticSubstitution(int numberOfAlphabets)
+		{
+			LetterSequences = new string[numberOfAlphabets];
+			NumberOfAlphabets = numberOfAlphabets;
+
+			for (int i = 0; i < numberOfAlphabets; i++)
+			{
+				LetterSequences[i] = String.Concat(Alphabet.OrderBy(x => Guid.NewGuid()));
+
+			}
+		}
+
+		public PolyalphabeticSubstitution(string[] letterSequences)
+		{
+			NumberOfAlphabets = letterSequences.Length;
+			LetterSequences = letterSequences;
+		}
+
+		
+		public Dictionary<char, char>[] ToDictionaries()
+		{
+			var dictionaries = new Dictionary<char, char>[NumberOfAlphabets];
+
+			for(int alph = 0; alph < NumberOfAlphabets; alph++)
+			{
+				dictionaries[alph] = new Dictionary<char, char>();
+				for (int i = 0; i < Alphabet.Length; i++)
+				{
+					dictionaries[alph].Add(LetterSequences[alph][i], Alphabet[i]);
+				}
+			}
+
+			return dictionaries;
+		}
+		
+		public static PolyalphabeticSubstitution FromDictionary(Dictionary<char, char>[] cypher)
+		{
+			StringBuilder stringBuilder = new StringBuilder("");
+			string[] alphabets = new string[cypher.Length];
+
+			for (int alph = 0; alph < cypher.Length; alph++)
+			{
+				for (int i = 0; i < Alphabet.Length; i++)
+				{
+					stringBuilder.Append(cypher[Alphabet[i]]);
+				}
+				alphabets[alph] = stringBuilder.ToString();
+				stringBuilder.Clear();
+			}
+			return new PolyalphabeticSubstitution(alphabets);
+		}
+	}
+
+	class PolyalphabeticComparer : IEqualityComparer<PolyalphabeticSubstitution>
+	{
+		public bool Equals(PolyalphabeticSubstitution x, PolyalphabeticSubstitution y)
+		{
+			if (x.NumberOfAlphabets != y.NumberOfAlphabets)
+				return false;
+
+			for(int i = 0; i < x.NumberOfAlphabets; i++)
+			{
+				if (x.LetterSequences[i] != y.LetterSequences[i])
+					return false;
+			}
+			return true;
+		}
+
+		public int GetHashCode([DisallowNull] PolyalphabeticSubstitution obj)
+		{
+			int hash = 0;
+
+			for (int i = 0; i < obj.NumberOfAlphabets; i++)
+			{
+				hash += obj.LetterSequences[i].GetHashCode();
+			}
+			return hash;
+		}
+	}
 }
