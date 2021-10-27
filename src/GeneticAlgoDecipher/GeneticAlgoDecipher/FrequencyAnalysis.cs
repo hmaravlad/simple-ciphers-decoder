@@ -187,13 +187,13 @@ namespace GeneticAlgoDecipher
 			foreach (var key in PairFreqs.Keys)
 			{
 				if(appearancesPairs.ContainsKey(key))
-					result += PairFreqs[key] * appearancesPairs[key] * 8; // 8-9
+					result += PairFreqs[key] * appearancesPairs[key] * pairMultiplication; // 8-9
 			}
 
 			foreach (var key in TrippleFreqs.Keys)
 			{
 				if (appearancesTrios.ContainsKey(key))
-					result += TrippleFreqs[key] * appearancesTrios[key] * 30; // 30
+					result += TrippleFreqs[key] * appearancesTrios[key] * trioMultiplication; // 30
 			}
 			
 			return result;
