@@ -10,6 +10,26 @@ namespace GeneticAlgoDecipher
 	{
 		static void Main(string[] args)
 		{
+			AlgoConfig regularConfig = new AlgoConfig() 
+			{ 
+				KeyLength = 1,
+				NumberOfIterations = 200, 
+				PopulationSize = 500, 
+				PairMultiplication = 8, 
+				TrioMultiplication = 30 
+			};
+
+			AlgoConfig polyalphabeticConfig = new AlgoConfig()
+			{
+				KeyLength = 4,
+				NumberOfIterations = 200,
+				PopulationSize = 500,
+				PairMultiplication = 8,
+				TrioMultiplication = 30
+			};
+
+
+
 			//GeneticAlgo algo = new GeneticAlgo();
 			GeneticAlgoPolyalphabetic algo = new GeneticAlgoPolyalphabetic();
 			//SubstitutionCypher cypher = new SubstitutionCypher();

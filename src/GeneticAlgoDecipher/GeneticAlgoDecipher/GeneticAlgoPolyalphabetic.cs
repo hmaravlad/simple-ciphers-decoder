@@ -6,100 +6,29 @@ using System.Threading.Tasks;
 
 namespace GeneticAlgoDecipher
 {
-	class GeneticAlgoPolyalphabetic
+	class GeneticAlgoPolyalphabetic : GeneticAlgoBase<PolyalphabeticSubstitution, PolyalphabeticComparer>
 	{
-		const int KeyLength = 8;
-		const int PopulationSize = 500;
-		const int NumberOfIterations = 2000;
-		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		FrequencyAnalysis FrequencyAnalysis = new FrequencyAnalysis();
+		int KeyLength { get { return config.KeyLength; } }
+
 		PolyalphabeticCypher SubstitutionCypher = new PolyalphabeticCypher();
 
 		public string TextToDecypher = "UMUPLYRXOYRCKTYYPDYZTOUYDZHYJYUNTOMYTOLTKAOHOKZCMKAVZDYBRORPTHQLSERUOERMKZGQJOIDJUDNDZATUVOTTLMQBOWNMERQTDTUFKZCMTAZMEOJJJOXMERKJHACMTAZATIZOEPPJKIJJNOCFEPLFBUNQHHPPKYYKQAZKTOTIKZNXPGQZQAZKTOTIZYNIUISZIAELMKSJOYUYYTHNEIEOESULOXLUEYGBEUGJLHAJTGGOEOSMJHNFJALFBOHOKAGPTIHKNMKTOUUUMUQUDATUEIRBKYUQTWKJKZNLDRZBLTJJJIDJYSULJARKHKUKBISBLTOJRATIOITHYULFBITOVHRZIAXFDRNIORLZEYUUJGEBEYLNMYCZDITKUXSJEJCFEUGJJOTQEZNORPNUDPNQIAYPEDYPDYTJAIGJYUZBLTJJYYNTMSEJYFNKHOTJARNLHHRXDUPZIALZEDUYAOSBBITKKYLXKZNQEYKKZTOKHWCOLKURTXSKKAGZEPLSYHTMKRKJIIQZDTNHDYXMEIRMROGJYUMHMDNZIOTQEKURTXSKKAGZEPLSYHTMKRKJIIQZDTNROAUYLOTIMDQJYQXZDPUMYMYPYRQNYFNUYUJJEBEOMDNIYUOHYYYJHAOQDRKKZRRJEPCFNRKJUHSJOIRQYDZBKZURKDNNEOYBTKYPEJCMKOAJORKTKJLFIOQHYPNBTAVZEUOBTKKBOWSBKOSKZUOZIHQSLIJJMSURHYZJJZUKOAYKNIYKKZNHMITBTRKBOPNUYPNTTPOKKZNKKZNLKZCFNYTKKQNUYGQJKZNXYDNJYYMEZRJJJOXMERKJVOSJIOSIQAGTZYNZIOYSMOHQDTHMEDWJKIULNOTBCALFBJNTOGSJKZNEEYYKUIXLEUNLNHNMYUOMWHHOOQNUYGQJKZLZJZLOLATSEHQKTAYPYRZJYDNQDTHBTKYKYFGJRRUFEWNTHAXFAHHODUPZMXUMKXUFEOTIMUNQIHGPAACFKATIKIZBTOTIKZNKKZNLORUKMLLFBUUQKZNLEOHIEOHEDRHXOTLMIRKLEAHUYXCZYTGUYXCZYTIUYXCZYTCVJOEBKOHE";
 		//public string TextToDecypher = "EFF PQL EKVTVPC PY FLMVHQLU EWC NVWF YG HYTCETHQEKLPVM SAKSPVPAPVYW MVHQLUS PQL YWL ASLF VW PQL MVHQLUPLRPS QLUL QES POLWPC SVR VWFLHLWFLWP UEWFYBTC MQYSLW BYWYETHQEKLPVM SAKSPVPAPVYW HEPPLUWS GYU LEMQ TLPPLU GUYB LWDTVSQ ETHQEKLP VP VS MTLEU PQEP CYA MEW WY TYWDLU ULTC YW PQL EBL SVBHTL UYAPVWL YG DALSSVWD PQL NLC KC LRQEASPVXL LEUMQ OQVMQ CYA HUYKEKTC ASLF PY FLMVHQLU PQL HULXVYAS HEUEDUEHQ OVTT PQL VWFLR YG MYVWMVFLWML SPVTT OYUN ES E SADDLSPVYW CYA MEW PUC PY FVXVFL PQL BLSSEDL VW HEUPS KC PQL WABKLU YG MQEUEMPLUS VW E NLC EWF EHHTC GULJALWMC EWETCSVS PY LEMQ YG PQL B MEW CYA GVWF EOEC PY ASL QVDQLU YUFLU GULJALWMC SPEPVSPVMS OVPQ PQVS PCHL YG MVHQLU PQL WLRP BEDVMET OYUF OVTT PENL PY PQL WLRP TEK LWZYCKVPTCSTESQPOY MEHVPET C MEHVPET Z MEHVPET KT MEHVPET C MEHVPET T";
-		public List<PolyalphabeticSubstitution> Substitutions = new List<PolyalphabeticSubstitution>();
 
-		public void RunAlgorythm()
+		public GeneticAlgoPolyalphabetic(AlgoConfig config, FrequencyAnalysis analysis, PolyalphabeticCypher substitutionCypher): base(config, analysis)
 		{
-			int i = 0;
-			CreatePopulation();
-			do
-			{
-				Breeding();
-				Mutation();
-				CalculateFit();
-				Selection();
-				i++;
+			SubstitutionCypher = substitutionCypher;
+		}	
 
-				if (i % 50 == 0)
-					Console.WriteLine(i);
-
-				if (i % 50 == 0)
-					Console.WriteLine($"Change: {Substitutions.First().PairChangeResult}\n {Substitutions.First().LetterSequences[0]}\n\n\n");
-			} while (i < NumberOfIterations);
-
-
-		}
-
-		void CreatePopulation()
+		protected override void CreatePopulation()
 		{
 			for (int i = 0; i < PopulationSize; i++)
 			{
 				Substitutions.Add(new PolyalphabeticSubstitution(KeyLength));
-			}
-			/*
-			List<LetterFrequency> currentLf = new List<LetterFrequency>();
-			for (int i = 0; i < Alphabet.Length; i++)
-			{
-				var frequency = TextToDecypher.Where(x => x == Alphabet[i]).Count() / (double)TextToDecypher.Length;
-				currentLf.Add(new LetterFrequency() { Letter = Alphabet[i], Frequency = frequency });
-			}
-			List<LetterFrequency> engLf = new List<LetterFrequency>();
-			foreach (var item in Alphabet)
-			{
-				engLf.Add(new LetterFrequency() { Letter = item, Frequency = FrequencyAnalysis.EnglishFrequencies[item] });
-			}
-			currentLf.Sort();
-			engLf.Sort();
-			Dictionary<char, char> cypher = new Dictionary<char, char>();
-			for (int i = 0; i < Alphabet.Length; i++)
-			{
-				cypher.Add(currentLf[i].Letter, engLf[i].Letter);
-			}
-			var goodOne = Substitution.FromDictionary(cypher);
-			Substitutions.Add(goodOne);
-
-
-			var random = new Random();
-			for (int i = 0; i < PopulationSize - 1; i++)
-			{
-				Substitution newSubstitution;
-
-				if (i < PopulationSize / 10)
-				{
-					int first = random.Next(Alphabet.Length);
-					int second = random.Next(Alphabet.Length);
-					StringBuilder stringBuilder = new StringBuilder(goodOne.LetterSequence);
-					char buff = stringBuilder[first];
-					stringBuilder[first] = stringBuilder[second];
-					stringBuilder[second] = buff;
-					newSubstitution = new Substitution(stringBuilder.ToString());
-				}
-				else
-					newSubstitution = new Substitution();
-				Substitutions.Add(newSubstitution);
-			}
-			CalculateFit();
-			Substitutions = Substitutions.OrderByDescending(x => x.PairChangeResult).ToList();
-
-			foreach (var item in Substitutions)
-			{
-				//Console.WriteLine(item.LetterSequence);
-			}
-			*/
+			}			
 		}
 
-		void Breeding()
+		protected override void Breeding()
 		{
 			for (int i = 0; i < PopulationSize; i += 2)
 			{
@@ -187,7 +116,7 @@ namespace GeneticAlgoDecipher
 			}
 		}
 
-		void Mutation()
+		protected override void Mutation()
 		{
 			var random = new Random();
 
@@ -197,7 +126,6 @@ namespace GeneticAlgoDecipher
 				{
 					Mutate(item);
 				}
-
 			}
 
 			void Mutate(PolyalphabeticSubstitution substitution)
@@ -215,30 +143,9 @@ namespace GeneticAlgoDecipher
 			}
 		}
 
-		void Selection()
+		protected override string Decypher(PolyalphabeticSubstitution item)
 		{
-			Substitutions = Substitutions
-				.Distinct(new PolyalphabeticComparer())
-				.OrderByDescending(x => x.PairChangeResult)
-				.Take(PopulationSize).ToList();
-		}
-
-		void CalculateFit()
-		{
-			List<Task> tasks = new List<Task>();
-
-			foreach (var item in Substitutions)
-			{
-				var newTask = new Task(() =>
-				{
-					string text = SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionaries());
-					var result = FrequencyAnalysis.AnalyzePairs(text);
-					item.PairChangeResult = result;
-				});
-				newTask.Start();
-				tasks.Add(newTask);
-			}
-			Task.WaitAll(tasks.ToArray());
+			return SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionaries()); 
 		}
 	}
 }

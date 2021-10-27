@@ -6,41 +6,18 @@ using System.Threading.Tasks;
 
 namespace GeneticAlgoDecipher
 {
-	class GeneticAlgo
+	class GeneticAlgo : GeneticAlgoBase<Substitution, SubstitutionComparer>
 	{
-		const int PopulationSize = 500;
-		const int NumberOfIterations= 200;
-		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		FrequencyAnalysis FrequencyAnalysis = new FrequencyAnalysis();
-		SubstitutionCypher SubstitutionCypher = new SubstitutionCypher();
-
+		SubstitutionCypher substitutionCypher;
 		public string TextToDecypher = "EFFPQLEKVTVPCPYFLMVHQLUEWCNVWFYGHYTCETHQEKLPVMSAKSPVPAPVYWMVHQLUSPQLYWLASLFVWPQLMVHQLUPLRPSQLULQESPBLWPCSVRVWFLHLWFLWPUEWFYOTCMQYSLWOYWYETHQEKLPVMSAKSPVPAPVYWHEPPLUWSGYULEMQTLPPLUGUYOLWDTVSQETHQEKLPVPVSMTLEUPQEPCYAMEWWYTYWDLUULTCYWPQLSEOLSVOHTLUYAPVWLYGDALSSVWDPQLNLCKCLRQEASPVILSLEUMQBQVMQCYAHUYKEKTCASLFPYFLMVHQLUPQLHULIVYASHEUEDUEHQBVTTPQLVWFLRYGMYVWMVFLWMLSPVTTBYUNESESADDLSPVYWCYAMEWPUCPYFVIVFLPQLOLSSEDLVWHEUPSKCPQLWAOKLUYGMQEUEMPLUSVWENLCEWFEHHTCGULXALWMCEWETCSVSPYLEMQYGPQLOMEWCYAGVWFEBECPYASLQVDQLUYUFLUGULXALWMCSPEPVSPVMSBVPQPQVSPCHLYGMVHQLUPQLWLRPOEDVMETBYUFBVTTPENLPYPQLWLRPTEKLWZYCKVPTCSTESQPBYMEHVPETCMEHVPETZMEHVPETKTMEHVPETCMEHVPETT";
 		//public string TextToDecypher = "EFF PQL EKVTVPC PY FLMVHQLU EWC NVWF YG HYTCETHQEKLPVM SAKSPVPAPVYW MVHQLUS PQL YWL ASLF VW PQL MVHQLUPLRPS QLUL QES POLWPC SVR VWFLHLWFLWP UEWFYBTC MQYSLW BYWYETHQEKLPVM SAKSPVPAPVYW HEPPLUWS GYU LEMQ TLPPLU GUYB LWDTVSQ ETHQEKLP VP VS MTLEU PQEP CYA MEW WY TYWDLU ULTC YW PQL EBL SVBHTL UYAPVWL YG DALSSVWD PQL NLC KC LRQEASPVXL LEUMQ OQVMQ CYA HUYKEKTC ASLF PY FLMVHQLU PQL HULXVYAS HEUEDUEHQ OVTT PQL VWFLR YG MYVWMVFLWML SPVTT OYUN ES E SADDLSPVYW CYA MEW PUC PY FVXVFL PQL BLSSEDL VW HEUPS KC PQL WABKLU YG MQEUEMPLUS VW E NLC EWF EHHTC GULJALWMC EWETCSVS PY LEMQ YG PQL B MEW CYA GVWF EOEC PY ASL QVDQLU YUFLU GULJALWMC SPEPVSPVMS OVPQ PQVS PCHL YG MVHQLU PQL WLRP BEDVMET OYUF OVTT PENL PY PQL WLRP TEK LWZYCKVPTCSTESQPOY MEHVPET C MEHVPET Z MEHVPET KT MEHVPET C MEHVPET T";
-		public List<Substitution> Substitutions = new List<Substitution>();
 
-		public void RunAlgorythm()
+		public GeneticAlgo(AlgoConfig config, FrequencyAnalysis analysis, SubstitutionCypher substitutionCypher): base(config, analysis)
 		{
-			int i = 0;
-			CreatePopulation();
-			do
-			{
-				Breeding();
-				Mutation();
-				CalculateFit();
-				Selection();
-				i++;
+			substitutionCypher = substitutionCypher;
+		}		
 
-				if (i % 50 == 0)
-					Console.WriteLine(i);
-
-				if (i % 50 == 0)
-					Console.WriteLine($"Change: {Substitutions.First().PairChangeResult}\n {Substitutions.First().LetterSequence}\n\n\n");
-			} while (i < NumberOfIterations);
-			
-
-		}
-
-		void CreatePopulation()
+		protected override void CreatePopulation()
 		{
 			List<LetterFrequency> currentLf = new List<LetterFrequency>();
 			for (int i = 0; i < Alphabet.Length; i++)
@@ -51,7 +28,7 @@ namespace GeneticAlgoDecipher
 			List<LetterFrequency> engLf = new List<LetterFrequency>();
 			foreach (var item in Alphabet)
 			{
-				engLf.Add(new LetterFrequency() { Letter = item, Frequency= FrequencyAnalysis.EnglishFrequencies[item] });
+				engLf.Add(new LetterFrequency() { Letter = item, Frequency= frequencyAnaysis.EnglishFrequencies[item] });
 			}
 			currentLf.Sort();
 			engLf.Sort();
@@ -85,14 +62,9 @@ namespace GeneticAlgoDecipher
 			}
 			CalculateFit();
 			Substitutions = Substitutions.OrderByDescending(x => x.PairChangeResult).ToList();
-
-			foreach(var item in Substitutions)
-			{
-				//Console.WriteLine(item.LetterSequence);
-			}
 		}
 
-		void Breeding()
+		protected override void Breeding()
 		{
 			for(int i = 0; i < PopulationSize-3; i+=3)
 			{
@@ -136,23 +108,11 @@ namespace GeneticAlgoDecipher
 					while (swapsSecond.ContainsKey(changedSecuence1[i]))
 					{
 						changedSecuence1[i] = swapsSecond[changedSecuence1[i]];
-						/*if(swapsFirst.ContainsKey(changedSecuence1[i]))
-						{
-							changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
-						}*/
-						//Console.WriteLine("Here " + i);
 					}
 
 					while (swapsFirst.ContainsKey(changedSecuence2[i]))
 					{
-						//var lettersWithDuplicates = changedSecuence2.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
 						changedSecuence2[i] = swapsFirst[changedSecuence2[i]];
-
-						/*if (swapsSecond.ContainsKey(changedSecuence2[i]))
-						{
-							changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
-						}*/
-						//Console.WriteLine("Here " + i);
 					}
 				}
 
@@ -160,26 +120,12 @@ namespace GeneticAlgoDecipher
 				{
 					while (swapsSecond.ContainsKey(changedSecuence1[i]))
 					{
-						//var lettersWithDuplicates = changedSecuence1.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
-
 						changedSecuence1[i] = swapsSecond[changedSecuence1[i]];
-						/*if (swapsFirst.ContainsKey(changedSecuence1[i]))
-						{
-							changedSecuence1[i] = swapsFirst[changedSecuence1[i]];
-						}*/
-						//Console.WriteLine("Here " + i);
 					}
 
 					while (swapsFirst.ContainsKey(changedSecuence2[i]))
 					{
-						//var lettersWithDuplicates = changedSecuence2.ToString().GroupBy(c => c).Where(x => x.Count() > 1).Select(x => x.Key).ToList();
-
 						changedSecuence2[i] = swapsFirst[changedSecuence2[i]];
-						/*if (swapsSecond.ContainsKey(changedSecuence2[i]))
-						{
-							changedSecuence2[i] = swapsSecond[changedSecuence2[i]];
-						}*/
-						//Console.WriteLine("Here " + i);
 					}
 				}
 
@@ -188,7 +134,7 @@ namespace GeneticAlgoDecipher
 			}
 		}
 
-		void Mutation()
+		protected override void Mutation()
 		{
 			var random = new Random();
 
@@ -215,31 +161,9 @@ namespace GeneticAlgoDecipher
 			}
 		}
 
-		void Selection()
+		protected override string Decypher(Substitution item)
 		{
-			var x = Substitutions
-				.Distinct(new SubstitutionComparer()).ToList();
-			Substitutions = Substitutions
-				.Distinct(new SubstitutionComparer())
-				.OrderByDescending(x => x.PairChangeResult)
-				.Take(PopulationSize).ToList();
-		}
-
-		void CalculateFit()
-		{
-			List<Task> tasks = new List<Task>();
-
-			foreach (var item in Substitutions)
-			{
-				var newTask = new Task(() => {
-					string text = SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionary());
-					var result = FrequencyAnalysis.AnalyzePairs(text);
-					item.PairChangeResult = result;
-				});
-				newTask.Start();
-				tasks.Add(newTask);				
-			}
-			Task.WaitAll(tasks.ToArray());
+			return substitutionCypher.Decypher(TextToDecypher, item.ToDictionary());
 		}
 	}
 }

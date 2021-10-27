@@ -8,7 +8,11 @@ using System.Threading.Tasks;
 
 namespace GeneticAlgoDecipher
 {
-	class FrequencyAnalysis
+	interface IFrequencyAnalysis 
+	{
+		double AnalyzePairs(string text, int pairMultiplication, int trioMultiplication);
+	}
+	class FrequencyAnalysis : IFrequencyAnalysis
 	{
 		public class AnalysisResult
 		{
@@ -101,7 +105,7 @@ namespace GeneticAlgoDecipher
 			return result;
 		}
 
-		public double AnalyzePairs(string text)
+		public double AnalyzePairs(string text, int pairMultiplication, int trioMultiplication)
 		{
 			double result = 0;
 			foreach (var letter in _alphabet)

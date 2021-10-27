@@ -8,7 +8,11 @@ using static GeneticAlgoDecipher.FrequencyAnalysis;
 
 namespace GeneticAlgoDecipher
 {
-	class Substitution
+	interface ISubstitution
+	{
+		double PairChangeResult { get; set; }
+	}
+	class Substitution : ISubstitution
 	{
 		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		public string LetterSequence { get; set; }
@@ -65,7 +69,7 @@ namespace GeneticAlgoDecipher
 	}
 
 
-	class PolyalphabeticSubstitution
+	class PolyalphabeticSubstitution: ISubstitution
 	{
 		const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		public string[] LetterSequences { get; set; }
@@ -76,7 +80,7 @@ namespace GeneticAlgoDecipher
 		public int Wrong { get; set; }
 		public int NumberOfAlphabets { get; set; }
 
-		public PolyalphabeticSubstitution(int numberOfAlphabets)
+		public PolyalphabeticSubstitution(int numberOfAlphabets) 
 		{
 			LetterSequences = new string[numberOfAlphabets];
 			NumberOfAlphabets = numberOfAlphabets;
