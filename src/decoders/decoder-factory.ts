@@ -1,4 +1,5 @@
 import { IDecoder } from 'src/types/decoder';
+import { RepeatingKeyXorDecoder } from './repeating-key-xor';
 import { SingleByteXorDecoder } from './single-byte-xor';
 
 export class DecoderFactory {
@@ -7,6 +8,7 @@ export class DecoderFactory {
   constructor() {
     this.decoders = {
       'single-byte-xor': new SingleByteXorDecoder(),
+      'repeating-key-xor': new RepeatingKeyXorDecoder(),
     };
   }
 

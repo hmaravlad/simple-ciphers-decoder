@@ -1,6 +1,5 @@
 import { IDecoder } from 'src/types/decoder';
-
-const VALID_STRING_REGEX = new RegExp(/^["“”'/.,;:\-_)( )a-zA-Z0-9]*$/g);
+import { Filter } from '../utils/filter';
 const DELIMITER = '\n\n===============================================\n\n';
 
 export class SingleByteXorDecoder implements IDecoder {
@@ -8,19 +7,9 @@ export class SingleByteXorDecoder implements IDecoder {
     const results = [];
     for (let i = 0; i < 256; i++) {
       results[i] = Buffer.from(ciphertext.map(byte => byte ^ i)).toString('utf8');
+      console.dir({ len1: ciphertext.length, len2: results[i].length });
     }
-    return this.filterResults(results).join(DELIMITER);
-  }
-
-  filterResults(results: string[]): string[] {
-    return results.filter((str) => {
-      return str
-        .split('\n')
-        .reduce((prev, curr) => prev && (curr.match(VALID_STRING_REGEX) !== null), this.returnTrue());
-    });
-  }
-
-  returnTrue(): boolean {
-    return true;
+    const filter = new Filter();
+    return filter.filterResults(results).join(DELIMITER);
   }
 }

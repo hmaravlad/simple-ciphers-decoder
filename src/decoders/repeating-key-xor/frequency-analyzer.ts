@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs';
+import { letterFrequencies } from './letter-frequencies';
 
-const letterFrequencies = JSON.parse(readFileSync('letter-frequencies.json', 'utf-8'));
 const MAX_COUNT = 10;
 
 export class FrequencyAnalyzer {
@@ -9,14 +8,15 @@ export class FrequencyAnalyzer {
     const frequencies: { [k: string]: number }[] = [];
     for (let i = 0; i < 256; i++) {
       results.push(ciphertext.map(byte => byte ^ i));
-      const charSum = ciphertext.reduce((prev, curr) => prev + (this.isLetter(curr) ? 1 : 0), 0);
+      const charSum = results[i].reduce((prev, curr) => prev + (this.isLetter(curr) ? 1 : 0), 0);
       frequencies.push({});
-      results[i].map(char => {
-        if (this.isLetter(char)) {
+      results[i].map(charCode => {
+        if (this.isLetter(charCode)) {
+          const char = String.fromCharCode(charCode);
           if (frequencies[i][char]) {
-            frequencies[i][String.fromCharCode(char)] += 1;
+            frequencies[i][char] += 1;
           } else {
-            frequencies[i][String.fromCharCode(char)] = 1;
+            frequencies[i][char] = 1;
           }
         }
       });
@@ -25,10 +25,13 @@ export class FrequencyAnalyzer {
       }
     }
     const change = this.countChange(frequencies);
-    results.map((res, i) => ({ res, i })).sort(({ i: i1 }, { i: i2 }) => {
-      return change[i2] - change[i1];
-    });
-    return results.slice(0, MAX_COUNT);
+    return results
+      .map((res, i) => ({ res, i }))
+      .sort(({ i: i1 }, { i: i2 }) => {
+        return change[i1] - change[i2];
+      })
+      .map(({ res }) => res)
+      .slice(0, MAX_COUNT);
   }
 
   countChange(frequencies: { [k: string]: number }[]): number[] {
@@ -36,7 +39,7 @@ export class FrequencyAnalyzer {
     for (let i = 0; i < frequencies.length; i++) {
       res.push(0);
       for (const key in letterFrequencies) {
-        res[i] += Math.abs(letterFrequencies[key] - (frequencies[i][key] + frequencies[i][key.toUpperCase()]));
+        res[i] += Math.abs(letterFrequencies[key] - ((frequencies[i][key] || 0) + (frequencies[i][key.toUpperCase()] || 0)));
       }
     }
     return res;
