@@ -11,23 +11,23 @@ namespace GeneticAlgoDecipher
 		where SubComp: IEqualityComparer<SubT>, new()
 	{
 		protected readonly AlgoConfig config;
-		protected int PopulationSize { get { return config.PopulationSize; } }
+		protected virtual int PopulationSize { get { return config.PopulationSize; } }
 		protected int NumberOfIterations { get { return config.NumberOfIterations; } }
 		protected int PairMultiplication { get { return config.PairMultiplication; } }
 		protected int TrioMultiplication { get { return config.TrioMultiplication; } }
 		protected string Alphabet { get { return config.Alphabet; } }
 		
-		protected List<SubT> Substitutions = new List<SubT>();
+		public List<SubT> Substitutions = new List<SubT>();
 
 		protected FrequencyAnalysis frequencyAnaysis;
 
 		public GeneticAlgoBase(AlgoConfig config, FrequencyAnalysis analysis)
 		{
-			config = config;
+			this.config = config;
 			frequencyAnaysis = analysis;
 		}
 
-		public void RunAlgorythm()
+		public virtual void RunAlgorythm()
 		{
 			int i = 0;
 			CreatePopulation();
@@ -67,7 +67,7 @@ namespace GeneticAlgoDecipher
 			{
 				var newTask = new Task(() =>
 				{
-					string text = Decypher(item);// SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionaries());
+					string text = Decypher(item);
 					var result = frequencyAnaysis.AnalyzePairs(text, PairMultiplication, TrioMultiplication);
 					item.PairChangeResult = result;
 				});

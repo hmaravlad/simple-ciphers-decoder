@@ -99,7 +99,7 @@ namespace GeneticAlgoDecipher
 		}
 
 		
-		public Dictionary<char, char>[] ToDictionaries()
+		public Dictionary<char, char>[] ToDictionary()
 		{
 			var dictionaries = new Dictionary<char, char>[NumberOfAlphabets];
 

@@ -145,7 +145,7 @@ namespace GeneticAlgoDecipher
 
 		protected override string Decypher(PolyalphabeticSubstitution item)
 		{
-			return SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionaries()); 
+			return SubstitutionCypher.Decypher(TextToDecypher, item.ToDictionary()); 
 		}
 	}
 }

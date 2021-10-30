@@ -28,41 +28,25 @@ namespace GeneticAlgoDecipher
 				TrioMultiplication = 30
 			};
 
+			FrequencyAnalysis analysis = new FrequencyAnalysis();
 
 
-			//GeneticAlgo algo = new GeneticAlgo();
-			GeneticAlgoPolyalphabetic algo = new GeneticAlgoPolyalphabetic();
-			//SubstitutionCypher cypher = new SubstitutionCypher();
+			/* Regular cyphers */
+
+
+			SubstitutionCypher cypher = new SubstitutionCypher();
+			GeneticAlgo algo = new GeneticAlgo(regularConfig, analysis, cypher);
+
+
+
+			/* Polyalphabetic cyphers */
+
+			/*
 			PolyalphabeticCypher cypher = new PolyalphabeticCypher();
+			GeneticAlgoPolyalphabetic algo = new GeneticAlgoPolyalphabetic(polyalphabeticConfig, analysis, cypher);
+			*/
 
 			algo.RunAlgorythm();
-
-			foreach (var item in algo.Substitutions.Take(20))
-			{
-				string result = cypher.Decypher(algo.TextToDecypher, item.ToDictionaries());
-				Console.WriteLine("===============");
-				Console.WriteLine("Change: " + item.PairChangeResult);
-				Console.WriteLine(result);
-				Console.WriteLine("\n\n================\n\n");
-			}
-			/*
-			const string correct = "EKMFLGDQVINTBWYHJUSPAXORCZ";
-			var first = algo.Substitutions.First();
-
-			foreach (var item in algo.Substitutions)
-			{
-				int wrong = 0;
-
-				for (int i = 0; i < correct.Length; i++)
-				{
-					if (item.LetterSequence[i] != correct[i])
-						wrong += 1;
-				}
-				item.Wrong = wrong;
-				
-			}
-
-			Console.WriteLine("SmallestWrong: " + algo.Substitutions.OrderBy(a => a.Wrong).First().Wrong);
 
 			foreach (var item in algo.Substitutions.Take(20))
 			{
@@ -72,15 +56,6 @@ namespace GeneticAlgoDecipher
 				Console.WriteLine(result);
 				Console.WriteLine("\n\n================\n\n");
 			}
-			
-			Substitution sub = new Substitution(correct);
-			SubstitutionCypher substitutionCypher = new SubstitutionCypher();
-			string decyphered = substitutionCypher.Decypher(algo.TextToDecypher, sub.ToDictionary());
-			FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis();
-			var resOfCorrect = frequencyAnalysis.AnalyzePairs(decyphered);
-
-			Console.WriteLine("Correct Score: " + resOfCorrect);
-			*/
 		}
 	}
 }

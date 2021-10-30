@@ -14,7 +14,7 @@ namespace GeneticAlgoDecipher
 
 		public GeneticAlgo(AlgoConfig config, FrequencyAnalysis analysis, SubstitutionCypher substitutionCypher): base(config, analysis)
 		{
-			substitutionCypher = substitutionCypher;
+			this.substitutionCypher = substitutionCypher;
 		}		
 
 		protected override void CreatePopulation()
